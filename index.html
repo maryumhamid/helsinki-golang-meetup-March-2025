@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<title>GenAI with LangchainGo & Ollama</title>
+
+	<!-- Reveal.js Core Styles -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/black.css">
+
+	<!-- Prism.js for Syntax Highlighting -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+
+	<style>
+		/* Keep existing heading text-transform override */
+		h1, h2, h3, h4, h5, h6 {
+			text-transform: none !important; /* Remove uppercase styling */
+		}
+
+		/* Remove extra lines from <pre> and <code> */
+		pre, code {
+			font-size: 0.6em !important; /* Adjust for better fit */
+			line-height: 1.2 !important; /* Improve readability */
+			padding: 10px !important; /* Ensure proper spacing inside the box */
+		}
+
+		/* Enable auto-resize for sections */
+		.reveal section {
+			overflow: auto !important; /* Enable scrolling for overflowing content */
+			padding: 0; /* Remove extra padding */
+		}
+
+		/* Prevent unnecessary space in syntax highlighting */
+		code[class*="language-"] {
+			white-space: pre !important; /* Maintain preformatted text */
+		}
+
+		ul ul {
+			font-size: 80%;
+		}
+
+		.reveal {
+			background-color: #c59d6f !important; /* Ensures full background */
+		}
+		.reveal .slides section {
+			background-color: transparent !important; /* Remove per-slide background */
+		}
+		.reveal pre {
+			/* Increase box width and height */
+			width: 90% !important; /* Adjust as needed */
+			height: auto !important; /* Expand height dynamically */
+			max-width: 100% !important; /* Prevent overflow */
+			max-height: 600px !important; /* Adjust max height */
+			display: block;
+		}
+
+	</style>
+
+</head>
+<body>
+<div class="reveal">
+	<div class="slides">
+		<!-- Title Slide -->
+		<section>
+			<h2>GenAI with LangchainGo & Ollama 🚀</h2>
+			<h3>Running AI Models Locally in Go</h3>
+			<p><small>Golang Meetup | Helsinki</small></p>
+			<p><small>Maryum Hamid</small></p>
+
+		</section>
+
+		<section>
+			<h2>Introduction</h2>
+			<p><small>Software Engineer at Zalando</small></p>
+			<p><small>Preowned premise of Zalando</small></p>
+			<p><small>C++ -> Python -> Go</small></p>
+		</section>
+
+		<!-- What is Ollama? -->
+		<section>
+			<h2>Ollama</h2>
+			<p>Docker for LLMs</p>
+			<p>Fully local inference</p>
+			<p>Works offline (perfect for privacy-focused applications)</p>
+			<p>Written in Go, uses llama.cpp</p>
+			<img src="images/ollama.png" alt="Ollama Logo" width="150"
+				 style="position: absolute; top: 10px; right: 10px; border-radius: 10px;">
+		</section>
+
+		<!-- Ollama Demo -->
+		<section>
+			<h2>Ollama demo</h2>
+			<pre><code class="language-bash">
+        > ollama pull llama3.2
+
+        > ollama run llama3.2
+
+        >>> What is Ollama?
+
+        >>> /bye
+            </code></pre>
+		</section>
+
+		<!-- Supported Models -->
+		<section>
+			<h2>Supported Models</h2>
+			<p>Llama by Meta</p>
+			<p>Mistral</p>
+			<p>Gemma by Google</p>
+			<p>Phi by Microsoft</p>
+			<p>Qwen by Alibaba</p>
+			<p>DeepSeek</p>
+		</section>
+
+		<!-- Ollama APIs -->
+		<section>
+			<h2>Ollama APIs</h2>
+			<pre style="background-color: #1e1e1e; color: #ffffff; padding: 10px; border-radius: 8px; font-size: 0.85em;">
+				<code class="language-bash">
+curl -X POST http://localhost:11434/api/generate \
+ -H "Content-Type: application/json" \
+ -d '{
+   "model": "llama3.2",
+   "prompt": "Please, briefly compare Java and Go",
+   "stream": false
+ }'
+            </code></pre>
+
+			<p>OpenAI-compatible: <i>/v1/chat/completions</i></p>
+		</section>
+
+		</section>
+
+		<!-- What is LangchainGo? -->
+		<section>
+			<h2>LangChainGo</h2>
+			<p>Framework for working with LLMs</p>
+			<p>Inspired by LangChain (Python)</p>
+			<p>Works with multiple LLMs</p>
+			<pre><code class="language-bash">
+        	go get github.com/tmc/langchaingo
+            </code></pre>
+		</section>
+
+		<!-- Basic Example -->
+		<section>
+			<h3>Basic Example</h3>
+			<pre><code class="language-go">
+package main
+import (
+	"context"
+	"fmt"
+	"github.com/tmc/langchaingo/llms/ollama"
+	"log"
+)
+
+func main() {
+	llm, err := ollama.New(ollama.WithModel("mistral:latest"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp, err := llm.Call(context.Background(), "Tell me a joke about Golang.")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(resp)
+}
+		</code></pre>
+		</section>
+
+		<section>
+			<h3>Ollama + LangchainGo</h3>
+			<pre><code class="language-go">
+func main() {
+   model, err := ollama.New(ollama.WithModel("mistral:latest"))
+   if err != nil {
+	  log.Fatal(err)
+   }
+
+   reader := bufio.NewReader(os.Stdin)
+   fmt.Println("🤖 Chatbot is running. Type 'exit' to quit.")
+
+   for {
+	  fmt.Print("You: ")
+	  input, _ := reader.ReadString('\n')
+	  input = strings.TrimSpace(input)
+
+	  if input == "exit" {
+		 break
+	  }
+
+	  response, err := model.Call(context.Background(), input, llms.WithTemperature(0.7))
+	  if err != nil {
+		 log.Fatal(err)
+	  }
+
+	  fmt.Println("Ollama:", response)
+   }
+}
+
+		</code></pre>
+		</section>
+
+		<section>
+			<h2>Memory (Remembers Past Messages)</h2>
+
+			<p></p>
+
+		</section>
+
+		<section>
+			<h2>Retrieval-Augmented Generation (RAG)</h2>
+
+			<p></p>
+
+		</section>
+
+		<section>
+			<h2>Image Recognition</h2>
+			<pre><code class="language-go">
+			llm, err := ollama.New(ollama.WithModel("llava"))
+				if err != nil {
+					log.Fatal("Error initializing OpenAI:", err)
+				}
+
+			messages := []llms.MessageContent{
+				{
+					Role: llms.ChatMessageType("human"),
+					Parts: []llms.ContentPart{
+						llms.TextPart("Recognize the object in the image"),
+						llms.BinaryPart("dog.jpeg", imageData),
+					},
+				},
+			}
+
+			out, err := llm.GenerateContent(ctx, messages)
+			if err != nil {
+				log.Fatal("Error generating response:", err)
+			}
+			</code></pre>
+
+			<p>LLaVA (Large Language and Vision Assistant) is a multimodal model.</p>
+
+		</section>
+
+		<section>
+			<h2>Image Recognition Demo</h2>
+			<img src="images/dog.jpg" alt="">
+			<pre><code class="language-text">
+AI Response:  The image shows a golden retriever dog standing in a field of yellow flowers,
+likely dandelions. The dog is looking towards the camera with its tongue out, and it appears
+to be enjoying the sunny day. The background suggests it might be late afternoon or early evening,
+given the warm lighting and the shadows cast by the dog and the flowers.
+			</code></pre>
+		</section>
+
+		<section>
+			<h2>Thankyou!</h2>
+		</section>
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+<script>
+	Reveal.initialize();
+</script>
+</body>
+</html>
