@@ -6,6 +6,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<title>GenAI with LangchainGo & Ollama</title>
 
+	<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+
+
 	<!-- Reveal.js Core Styles -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/black.css">
@@ -16,6 +19,15 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/reveal.js/plugin/notes/notes.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			Reveal.initialize({
+				plugins: [ RevealNotes ],
+			});
+		});
+	</script>
+
 
 	<style>
 		/* Keep existing heading text-transform override */
@@ -62,6 +74,7 @@
 
 	</style>
 
+
 </head>
 <body>
 <div class="reveal">
@@ -72,6 +85,7 @@
 			<h3>Running AI Models Locally in Go</h3>
 			<p><small>Golang Meetup | Helsinki</small></p>
 			<p><small>Maryum Hamid</small></p>
+
 
 		</section>
 
@@ -96,10 +110,10 @@
 		<!-- Ollama Demo -->
 		<section>
 			<h2>Ollama demo</h2>
-			<pre><code class="language-bash">
-        > ollama pull llama3.2
+			<pre><code class="language-bash" data-exec>
+        > ollama pull mistral
 
-        > ollama run llama3.2
+        > ollama run mistral
 
         >>> What is Ollama?
 
@@ -118,30 +132,34 @@
 			<p>DeepSeek</p>
 		</section>
 
-		<!-- Ollama APIs -->
-		<section>
-			<h2>Ollama APIs</h2>
-			<pre style="background-color: #1e1e1e; color: #ffffff; padding: 10px; border-radius: 8px; font-size: 0.85em;">
-				<code class="language-bash">
-curl -X POST http://localhost:11434/api/generate \
- -H "Content-Type: application/json" \
- -d '{
-   "model": "llama3.2",
-   "prompt": "Please, briefly compare Java and Go",
-   "stream": false
- }'
-            </code></pre>
+<!--		&lt;!&ndash; Ollama APIs &ndash;&gt;-->
+<!--		<section>-->
+<!--			<h2>Ollama APIs</h2>-->
+<!--			<pre style="background-color: #1e1e1e; color: #ffffff; padding: 10px; border-radius: 8px; font-size: 0.85em;">-->
+<!--				<code class="language-bash">-->
+<!--curl -X POST http://localhost:11434/api/generate \-->
+<!-- -H "Content-Type: application/json" \-->
+<!-- -d '{-->
+<!--   "model": "llama3.2",-->
+<!--   "prompt": "What is Ollama?",-->
+<!--   "stream": false-->
+<!-- }'-->
+<!--            </code></pre>-->
 
-			<p>OpenAI-compatible: <i>/v1/chat/completions</i></p>
-		</section>
+<!--			<p>OpenAI-compatible: <i>/v1/chat/completions</i></p>-->
+<!--		</section>-->
 
 		</section>
 
 		<!-- What is LangchainGo? -->
 		<section>
+			<aside class="notes">
+
+			</aside>
 			<h2>LangChainGo</h2>
 			<p>Framework for working with LLMs</p>
 			<p>Inspired by LangChain (Python)</p>
+			<p>Abstraction over AI models</p>
 			<p>Works with multiple LLMs</p>
 			<pre><code class="language-bash">
         	go get github.com/tmc/langchaingo
@@ -150,7 +168,7 @@ curl -X POST http://localhost:11434/api/generate \
 
 		<!-- Basic Example -->
 		<section>
-			<h3>Basic Example</h3>
+			<h3>Ollama + LangchainGo</h3>
 			<pre><code class="language-go">
 package main
 import (
@@ -177,39 +195,6 @@ func main() {
 		</section>
 
 		<section>
-			<h3>Ollama + LangchainGo</h3>
-			<pre><code class="language-go">
-func main() {
-   model, err := ollama.New(ollama.WithModel("mistral:latest"))
-   if err != nil {
-	  log.Fatal(err)
-   }
-
-   reader := bufio.NewReader(os.Stdin)
-   fmt.Println("🤖 Chatbot is running. Type 'exit' to quit.")
-
-   for {
-	  fmt.Print("You: ")
-	  input, _ := reader.ReadString('\n')
-	  input = strings.TrimSpace(input)
-
-	  if input == "exit" {
-		 break
-	  }
-
-	  response, err := model.Call(context.Background(), input, llms.WithTemperature(0.7))
-	  if err != nil {
-		 log.Fatal(err)
-	  }
-
-	  fmt.Println("Ollama:", response)
-   }
-}
-
-		</code></pre>
-		</section>
-
-		<section>
 			<h2>Memory (Remembers Past Messages)</h2>
 			<p>LLMs to remember past interactions</p>
 			<p>Maintains Conversation Context </p>
@@ -218,13 +203,45 @@ func main() {
 		</section>
 
 		<section>
-			<h2>Retrieval-Augmented Generation (RAG)</h2>
-			<p>Enhances AI by combining “retrieval” + “generation”.</p>
-			<p>Responses by retrieving relevant external data</p>
-			<p>Works with databases, APIs, and vector stores to fetch the most relevant data.</p>
-			<p></p>
+			<h3>Chatbot Demo With Memory</h3>
+			<pre style="font-size: 0.4em;"><code class="language-go">
+		err = chatMemory.AddUserMessage(context.Background(), input)
+		if err != nil {
+			continue
+		}
 
+		messages, err := chatMemory.Messages(context.Background())
+		if err != nil {
+			continue
+		}
+
+		var conversationHistory string
+		for _, msg := range messages {
+			conversationHistory += fmt.Sprintf("%s: %s\n", msg.GetType(), msg.GetContent())
+		}
+
+		response, err := model.Call(context.Background(), conversationHistory, llms.WithTemperature(0.7))
+		if err != nil {
+			continue
+		}
+
+		err = chatMemory.AddAIMessage(context.Background(), response)
+		if err != nil {
+			continue
+		</code></pre>
 		</section>
+
+		</code></pre>
+		</section>
+
+<!--		<section>-->
+<!--			<h2>Retrieval-Augmented Generation (RAG)</h2>-->
+<!--			<p>Enhances AI by combining “retrieval” + “generation”.</p>-->
+<!--			<p>Responses by retrieving relevant external data</p>-->
+<!--			<p>Works with databases, APIs, and vector stores to fetch the most relevant data.</p>-->
+<!--			<p></p>-->
+
+<!--		</section>-->
 
 		<section>
 			<h2>Image Recognition</h2>
@@ -266,13 +283,10 @@ given the warm lighting and the shadows cast by the dog and the flowers.
 		</section>
 
 		<section>
-			<h2>Thankyou!</h2>
+			<h2>Thank you!</h2>
+			<p><a href="https://www.linkedin.com/in/maryum-hamid-6657231aa/" style="font-size: 0.5em; color: white;">https://www.linkedin.com/in/maryum-hamid-6657231aa/</a></p>
 		</section>
 	</div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
-<script>
-	Reveal.initialize();
-</script>
 </body>
 </html>
