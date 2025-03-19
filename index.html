@@ -6,6 +6,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<title>GenAI with LangchainGo & Ollama</title>
 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+
+
 	<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
 
 
@@ -18,15 +21,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/reveal.js/plugin/notes/notes.js"></script>
-	<script>
-		document.addEventListener("DOMContentLoaded", function() {
-			Reveal.initialize({
-				plugins: [ RevealNotes ],
-			});
-		});
-	</script>
 
 
 	<style>
@@ -71,7 +65,70 @@
 			max-height: 600px !important; /* Adjust max height */
 			display: block;
 		}
+		.reveal .slides section {
+			background-color: transparent !important;
+		}
+		@media print {
+			* {
+				-webkit-print-color-adjust: exact !important;
+				print-color-adjust: exact !important;
+			}
 
+			/* ✅ Remove any Reveal.js default margins */
+			html, body {
+				margin: 0 !important;
+				padding: 0 !important;
+				width: 100% !important;
+				height: 100% !important;
+				background-color: #c59d6f !important; /* Your background color */
+			}
+
+			/* ✅ Make sure Reveal.js fills the entire page */
+			.reveal {
+				width: 100vw !important;
+				height: 100vh !important;
+				background-color: #c59d6f !important;
+				margin: 0 !important;
+				padding: 0 !important;
+				box-shadow: none !important;
+				border: none !important;
+			}
+
+			/* ✅ Ensure slides take full page width and height */
+			.reveal .slides {
+				width: 100vw !important;
+				height: 100vh !important;
+				background-color: #c59d6f !important;
+				margin: 0 !important;
+				padding: 0 !important;
+			}
+
+			/* ✅ Fix individual slides */
+			.reveal .slides section {
+				width: 100vw !important;
+				height: 100vh !important;
+				background-color: #c59d6f !important;
+				color: white !important;
+				box-shadow: none !important;
+				border: none !important;
+				margin: 0 !important;
+				padding: 0 !important;
+			}
+
+			/* ✅ Fix black gaps between slides */
+			.pdf-page {
+				margin: 0 !important;
+				padding: 0 !important;
+				page-break-before: always !important;
+				background-color: #c59d6f !important;
+			}
+
+			/* ✅ Force background on code blocks too */
+			pre, code {
+				background-color: #1e1e1e !important; /* Your dark theme for code */
+				color: white !important;
+			}
+		}
 	</style>
 
 
@@ -110,7 +167,7 @@
 		<!-- Ollama Demo -->
 		<section>
 			<h2>Ollama demo</h2>
-			<pre><code class="language-bash" data-exec>
+			<pre><code class="language-bash">
         > ollama pull mistral
 
         > ollama run mistral
@@ -132,30 +189,8 @@
 			<p>DeepSeek</p>
 		</section>
 
-<!--		&lt;!&ndash; Ollama APIs &ndash;&gt;-->
-<!--		<section>-->
-<!--			<h2>Ollama APIs</h2>-->
-<!--			<pre style="background-color: #1e1e1e; color: #ffffff; padding: 10px; border-radius: 8px; font-size: 0.85em;">-->
-<!--				<code class="language-bash">-->
-<!--curl -X POST http://localhost:11434/api/generate \-->
-<!-- -H "Content-Type: application/json" \-->
-<!-- -d '{-->
-<!--   "model": "llama3.2",-->
-<!--   "prompt": "What is Ollama?",-->
-<!--   "stream": false-->
-<!-- }'-->
-<!--            </code></pre>-->
-
-<!--			<p>OpenAI-compatible: <i>/v1/chat/completions</i></p>-->
-<!--		</section>-->
-
-		</section>
-
 		<!-- What is LangchainGo? -->
 		<section>
-			<aside class="notes">
-
-			</aside>
 			<h2>LangChainGo</h2>
 			<p>Framework for working with LLMs</p>
 			<p>Inspired by LangChain (Python)</p>
@@ -231,17 +266,14 @@ func main() {
 		</code></pre>
 		</section>
 
-		</code></pre>
-		</section>
+		<!--		<section>-->
+		<!--			<h2>Retrieval-Augmented Generation (RAG)</h2>-->
+		<!--			<p>Enhances AI by combining “retrieval” + “generation”.</p>-->
+		<!--			<p>Responses by retrieving relevant external data</p>-->
+		<!--			<p>Works with databases, APIs, and vector stores to fetch the most relevant data.</p>-->
+		<!--			<p></p>-->
 
-<!--		<section>-->
-<!--			<h2>Retrieval-Augmented Generation (RAG)</h2>-->
-<!--			<p>Enhances AI by combining “retrieval” + “generation”.</p>-->
-<!--			<p>Responses by retrieving relevant external data</p>-->
-<!--			<p>Works with databases, APIs, and vector stores to fetch the most relevant data.</p>-->
-<!--			<p></p>-->
-
-<!--		</section>-->
+		<!--		</section>-->
 
 		<section>
 			<h2>Image Recognition</h2>
@@ -288,5 +320,24 @@ given the warm lighting and the shadows cast by the dog and the flowers.
 		</section>
 	</div>
 </div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			center: true,
+			slideNumber: true,
+			pdfSeparateFragments: false,  // Ensures fragments are printed on the same page
+			pdfMaxPagesPerSlide: 1,       // One slide per PDF page
+			width: 1900,                  // Ensures full-width slides
+			height: 1080,                 // Ensures full-height slides
+			viewDistance: 50,             // Ensures all slides are pre-rendered before printing
+			transition: 'none',           // Prevents animations from affecting print layout
+			backgroundTransition: 'none'
+		});
+	});
+</script>
+
 </body>
 </html>
